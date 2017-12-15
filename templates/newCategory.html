@@ -1,0 +1,20 @@
+<html>
+
+<head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+</head>
+<body>
+
+<h1>New Category</h1>
+
+<form id='addNewCatForm' action="{{url_for('addNewCategory')}}" method = 'post'>
+
+    <p>Name:</p>
+        <input type ='text' size='30' name='name'>
+        <input type='submit' value='Create'>
+        <input type='submit' value='Cancel' onclick="addNewCatForm.action='{{url_for('showCategories')}};addNewCatForm.method='GET'">
+
+</form>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
+    <body>
+
+        <div class="topHeader">
+            Catalog App
+        </div>
+
+        {%if 'username' in session %}
+        <div class="category">
+            <a href="{{ url_for('addNewCategory') }}" >Create a New Category</a>
+        </div>
+        {% endif %}
+
+
+<div class="row top-menu">
+
+    <div class="col-md-6 text-right">
+            <a href="{{url_for('showLogin')}}">Click Here to Log In - FORCED</a>
+
+            {%if 'username' not in session %}
+            <a href="{{url_for('showLogin')}}">Click Here to Log In </a>
+            {% elif sessprovider == 'google' %}
+                Hi {{ username }}!<a href="{{url_for('gdisconnect')}}" title="G --{{ username }}-- --{{ sessprovider }}--">Disconnect</a>
+            {% elif sessprovider == 'facebook' %}
+                Hi {{ session.username }}!<a href="{{url_for('fbdisconnect')}}" title="FB">Disconnect</a>
+            {% else %}
+                <a href="{{url_for('gdisconnect')}}" title="Else G">GDisconnect</a>
+            {% endif %}
+    </div>
+</div>
+
+        <div class="mainBox">
+
+            <div class="leftBox">
+                <div class="boxHeader">
+                    <a href="{{url_for('showCategories')}}">Categories</a>
+                </div>
+
+                {% for category in categories %}
+
+                <div class="category">
+                    <a href="{{ url_for('showItemsInCategory', category = category.name ) }}">{{ category.name }}</a>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="rightBox">
+                <div class="boxHeader">
+                    Latest Items
+                </div>
+
+                <div class="itemName">
+                    itemName 1
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+                <div class="itemName">
+                    itemName 2
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+                <div class="itemName">
+                    itemName 3
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </body>
+</html>
+
+

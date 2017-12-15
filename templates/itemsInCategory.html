@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
+    <body>
+
+        <div class="topHeader">
+            {{ category.name }} Items (# Items)
+        </div>
+
+        <div class="category">
+            <a href="{{ url_for('addNewItem', category = category) }}" >Add New Item NOT FINISHED</a>
+        </div>
+
+
+        <div class="mainBox">
+
+            <div class="leftBox">
+                <div class="boxHeader">
+                    Categories
+                </div>
+
+                {% for item in items %}
+
+                <div class="item">
+                    <a href="{{ url_for('showItemDescription', item = item.name ) }}"></a>
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+            <div class="rightBox">
+                <div class="boxHeader">
+                    Latest Items
+                </div>
+
+                <div class="itemName">
+                    itemName 1
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+                <div class="itemName">
+                    itemName 2
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+                <div class="itemName">
+                    itemName 3
+                    <div class="itemCategory">
+                        (item cat)
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </body>
+</html>
+
+

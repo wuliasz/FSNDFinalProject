@@ -1,0 +1,49 @@
+
+.topHeader {
+    font-family: Arial;
+    font-weight: bold;
+    color: white;
+    background-color: navy;
+    padding: 5px 400px 5px 100px;
+    font-size: 20px;
+}
+
+.mainBox {
+    padding: 15px 0px 1x5px 100px;
+}
+
+.boxHeader {
+    font-family: Arial;
+    font-weight: bold;
+    color: navy;
+}
+
+.leftBox{
+    zposition: absolute;
+    zpadding: 10px 0px 10px 100px;
+}
+
+.rightBox{
+    zposition: absolute;
+    zpadding: 10px 0px 10px 300px;
+}
+
+.category {
+    font-family: Arial;
+    color: red;
+    padding: 5px 0px 5px 0px;
+}
+
+.itemName {
+    font-family: Arial;
+    color: red;
+    padding: 5px 0px 5px 0px;
+}
+
+.itemCategory{
+    font-family: Arial;
+    color: grey;
+    padding: 5px 0px 5px 0px;
+    position: relative;
+    display: inline;
+}
