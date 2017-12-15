@@ -51,10 +51,10 @@ def showCategories():
     #pull all categories in the table.
     categories = session.query(Category).all()
     #display them using the template.
-    return render_template('categoriesAndLatestItem.html', categories=categories,
-        username = login_session['username'],
-        sessprovider = login_session['provider'])
+    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session)
 
+#        username = login_session['username'],
+#        sessprovider = login_session['provider'])
 # was sending login_session.  i don't want to do that anymore.     session=login_session)
 
 
@@ -188,6 +188,8 @@ def fbdisconnect():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    print(" ")
+    print("reached gconnect")
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -195,6 +197,8 @@ def gconnect():
         return response
     # Obtain authorization code
     code = request.data
+    print(" ")
+    print("code=BEGIN %s END" % code)
 
     try:
         # Upgrade the authorization code into a credentials object
@@ -202,10 +206,14 @@ def gconnect():
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
+        print(" FLOW EXCHANGE ERROR ")
         response = make_response(
             json.dumps('Failed to upgrade the authorization code.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
+
+    print(" ")
+    print("after oauth_flow")
 
     # Check that the access token is valid.
     access_token = credentials.access_token
@@ -219,6 +227,9 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    print(" ")
+    print("access token is %s " % access_token)
+
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
@@ -226,6 +237,9 @@ def gconnect():
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
+
+    print(" ")
+    print("gplus_id is %s " % gplus_id)
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
@@ -235,13 +249,20 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    print(" ")
+    print("issued to %s " % CLIENT_ID)
+
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    #12/15/17 one time removal to force the later statements...
+    #if stored_access_token is not None and gplus_id == stored_gplus_id:
+    #    response = make_response(json.dumps('Current user is already connected.'),
+    #                             200)
+    #    response.headers['Content-Type'] = 'application/json'
+    #    return response
+    print(" ")
+    print("stored access token is %s " % stored_access_token)
+
 
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
