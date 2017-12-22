@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+
+    <div class="row banner menu">
+        <div class="col-md-11 col-md-offset-1 padding-none">
+            <h1>Login</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-1 padding-top">
+            <h2>{{ message }}</h2>
+            <form action="{{ url_for('emailLogin')}}" method = "post">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type ="text" class="form-control" name="email" value="">
+                    <br>
+                    <label>Password:</label>
+                    <input type ="password" class="form-control" name="password" value="">
+                    <input type="hidden" name="state" value="{{STATE}}">
+
+                    <div class="padding-bottom"></div>
+                    <button type="submit" class="btn btn-default" id="submit" type="submit" >Login</button>
+
+                </div>
+            </form>
+
+            <form action ="{{ url_for('emailLoginNew') }}" method = "post">
+                    <input type="hidden" name="state" value="{{STATE}}">
+                    <button type="submit" class="btn btn-default" id="submit" type="submit">Create New Account</button>
+            </form>
+
+        </div>
+    </div>
+</body>
+
+</html>

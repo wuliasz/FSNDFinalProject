@@ -29,6 +29,12 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+
+
+
+
+
+# THIS SECTION FOR TESTING... WILL BE REMOVED....
 # Show all restaurants
 @app.route('/restaurant/')
 def showRestaurants():
@@ -45,6 +51,13 @@ def showInt(passedInt):
     return "testing - you sent this integer:  %s " % passedInt
 
 
+
+
+
+
+
+
+
 @app.route('/')
 @app.route('/catalog')
 def showCategories():
@@ -58,15 +71,24 @@ def showCategories():
 # was sending login_session.  i don't want to do that anymore.     session=login_session)
 
 
-@app.route('/category/new', methods=['GET', 'POST'])
+@app.route('/catalog/newCategory', methods=['GET', 'POST'])
 def addNewCategory():
+    if 'email' not in login_session:
+            return redirect('/showLogin')
     if request.method == 'POST':
-        newCategory = Category(name=request.form['name'])
+        #
+        # development response... for now...
+        #response = make_response(json.dumps('Add New Category - Post behavior not yet defined.'), 200)
+        #response.headers['Content-Type'] = 'application/json'
+        #return response
+        #
+        newCategory = Category(name=request.form['name'], ownerEmail=login_session['email'])
         session.add(newCategory)
         session.commit()
         return redirect(url_for('showCategories'))
     else:
         return render_template('newCategory.html')
+
 
 
 @app.route('/catalog/<category>/Items')
@@ -100,7 +122,8 @@ def showLogin():
                     for x in xrange(32))
     login_session['state'] = state
     # return "The current session state is %s" % login_session['state']
-    return render_template('login.html', STATE=state)
+    #return render_template('login.html', STATE=state)
+    return render_template('loginLocal.html', STATE=state, message='')
 
 
 @app.route('/fbconnect', methods=['POST'])
@@ -188,8 +211,6 @@ def fbdisconnect():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    print(" ")
-    print("reached gconnect")
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -197,8 +218,6 @@ def gconnect():
         return response
     # Obtain authorization code
     code = request.data
-    print(" ")
-    print("code=BEGIN %s END" % code)
 
     try:
         # Upgrade the authorization code into a credentials object
@@ -212,9 +231,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print(" ")
-    print("after oauth_flow")
-
     # Check that the access token is valid.
     access_token = credentials.access_token
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
@@ -227,9 +243,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print(" ")
-    print("access token is %s " % access_token)
-
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
     if result['user_id'] != gplus_id:
@@ -237,9 +250,6 @@ def gconnect():
             json.dumps("Token's user ID doesn't match given user ID."), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-
-    print(" ")
-    print("gplus_id is %s " % gplus_id)
 
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
@@ -249,20 +259,15 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print(" ")
-    print("issued to %s " % CLIENT_ID)
-
     stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
-    #12/15/17 one time removal to force the later statements...
-    #if stored_access_token is not None and gplus_id == stored_gplus_id:
-    #    response = make_response(json.dumps('Current user is already connected.'),
-    #                             200)
-    #    response.headers['Content-Type'] = 'application/json'
-    #    return response
-    print(" ")
-    print("stored access token is %s " % stored_access_token)
-
+    #12/15/17 I am forcing the values to be reset with each login.
+    #         i had a problem while testing, where i could NOT
+    if stored_access_token is not None and gplus_id == stored_gplus_id:
+        response = make_response(json.dumps('Current user is already connected.'),
+                                 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
@@ -274,21 +279,11 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-    #12/14/17 lorenzo's statement looks like this:
-    #12/14/17 data = json.loads(answer.text)
-    print(" ")
+
     print(" ")
     print(" printing answer.json(): ")
     print(answer.json())
     print(" ")
-    print(" ")
-    print(" ")
-    print(" ")
-    print(" printing json.loads(answer.text): ")
-    print(json.loads(answer.text))
-    print(" ")
-    print(" ")
-
 
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
@@ -388,22 +383,48 @@ def verify_password(username, password):
 
 @app.route('/users', methods = ['POST'])
 def new_user():
-    username = request.json.get('username')
-    password = request.json.get('password')
-    if username is None or password is None:
+    login_session['email'] = ""
+    if request.form['state'] != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    #this is how udacity did it:
+    #username = request.get_json('username')
+    #password = request.get_json('password')
+    #email = request.get_json('email')
+    #
+    #this is how i got it to work using postman
+    #username = request.json['username']
+    #password = request.json['password']
+    #email = request.json['email']
+    #
+    #this is how I WILL do it - with a form
+    username = request.form['username']
+    password = request.form['password']
+    email = request.form['email']
+
+    if username is None or password is None or email is None:
         print "missing arguments"
         abort(400)
 
-    if session.query(User).filter_by(username = username).first() is not None:
+    #if session.query(User).filter_by(username = username).first() is not None:
+    if session.query(User).filter_by(email = email).first() is not None:
         print "existing user"
         user = session.query(User).filter_by(username=username).first()
         return jsonify({'message':'user already exists'}), 200#, {'Location': url_for('get_user', id = user.id, _external = True)}
 
-    user = User(username = username)
+    user = User(username = username, email = email)
     user.hash_password(password)
     session.add(user)
     session.commit()
-    return jsonify({ 'username': user.username }), 201#, {'Location': url_for('get_user', id = user.id, _external = True)}
+    #return jsonify({ 'username': user.username }), 201#, {'Location': url_for('get_user', id = user.id, _external = True)}
+    login_session['email'] = email
+    login_session['provider'] = "local"
+    login_session['username'] = username
+    return redirect(url_for('showCategories'))
+
+
 
 @app.route('/users/<int:id>')
 def get_user(id):
@@ -411,6 +432,67 @@ def get_user(id):
     if not user:
         abort(400)
     return jsonify({'username': user.username})
+
+
+
+#@app.route('/emailLogin', methods=['GET','POST'])
+@app.route('/emailLogin', methods=['POST'])
+def emailLogin():
+    login_session['email'] = ""
+    if request.form['state'] != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    if request.method == 'POST':
+        print("Looking for email %s" % request.form['email'])
+        user = session.query(User).filter_by(email=request.form['email']).one()
+        if not user:
+            print "User not found"
+            return False
+            #redirect to the NEW USER PAGE
+            #return redirect(url_for('showCategories'))
+        elif not user.verify_password(request.form['password']):
+            print("Unable to verIfy password")
+            return render_template('loginLocal.html', STATE=state, message="Incorrect Password")
+        else:
+            print("Password verified for %s " % user.email)
+            login_session['email'] = user.email
+            login_session['provider'] = "local"
+            login_session['username'] = user.username
+            # WHAT IS THIS?  g.user = user
+            return redirect(url_for('showCategories'))
+    else:
+        return render_template('loginLocal.html', STATE=state, message = "")
+
+
+@app.route('/emailLoginNew', methods = ['POST'])
+def emailLoginNew():
+    if request.form['state'] != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    return render_template('loginLocalNew.html', STATE=request.form['state'], message = "Create a New Login")
+
+
+
+@app.route('/emailDisconnect')
+def disconnectLocal():
+    login_session['email'] = ""
+    login_session['provider'] = ""
+    login_session['username'] = ""
+    return redirect(url_for('showCategories'))
+
+#@app.route('/users/<email>')
+#def get_user(email):
+#    if not user:
+#        abort(400)
+#    return jsonify({'username': user.username})
+
+
+
+
+
+
 
 @app.route('/resource')
 @auth.login_required

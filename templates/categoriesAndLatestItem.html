@@ -9,9 +9,9 @@
             Catalog App
         </div>
 
-        {%if 'username' in session %}
+        {%if session.username != '' %}
         <div class="category">
-            <a href="{{ url_for('addNewCategory') }}" >Create a New Category</a>
+            <a href="{{ url_for('addNewCategory') }}" >Create a New Category, {{ session.username }}</a>
         </div>
         {% endif %}
 
@@ -19,14 +19,23 @@
 <div class="row top-menu">
 
     <div class="col-md-6 text-right">
-            <a href="{{url_for('showLogin')}}">Click Here to Log In - FORCED</a>
+            <!----
+            <br><a href="{{url_for('showLogin')}}">Click Here to Log In - FORCED</a><br>
+            ---->
 
-            {%if 'username' not in session %}
-            <a href="{{url_for('showLogin')}}">Click Here to Log In </a>
+
+            {%if 'email' not in session %}
+                <!---- <a href="{{url_for('showLogin')}}">Click Here to Log In </a> ---->
+                <a href="{{url_for('showLogin')}}">Click Here to LOG IN </a>
+            {% elif session.email == '' %}
+                <a href="{{url_for('showLogin')}}">Click Here to Log In </a>
             {% elif session.provider == 'google' %}
-                Hi {{ session.username }}!<a href="{{url_for('gdisconnect')}}" title="G --{{ session.username }}-- --{{ session.email }}--">Disconnect</a>
-            {% elif sessprovider == 'facebook' %}
-                Hi {{ session.username }}!<a href="{{url_for('fbdisconnect')}}" title="FB">Disconnect</a>
+                Signed in as {{ session.email }}!<a href="{{url_for('gdisconnect')}}"  title="G --{{ session.username }}-- --{{ session.email }}--">Disconnect</a>
+            {% elif session.provider == 'facebook' %}
+                Signed in as {{ session.email }}!<a href="{{url_for('fbdisconnect')}}" title="FB">Disconnect</a>
+            {% elif session.provider == 'local' %}
+                Hi {{ session.username}}
+                <a href="{{url_for('disconnectLocal')}}">Disconnect</a>
             {% else %}
                 <a href="{{url_for('gdisconnect')}}" title="Else G">GDisconnect</a>
             {% endif %}

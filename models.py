@@ -39,13 +39,16 @@ class Category(Base):
     __tablename__ = 'category'
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
+    ownerEmail = Column(String(250), ForeignKey('user.email'))
+    owner = relationship(User)
 
     @property
     def serialize(self):
         """Return object data in easily serializeable format"""
         return {
         'id': self.id,
-        'name': self.name
+        'name': self.name,
+        'ownerEmail': self.ownerEmail
         }
 
 

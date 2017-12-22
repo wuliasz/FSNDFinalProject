@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+</head>
+
+<body>
+
+    <div class="row banner menu">
+        <div class="col-md-11 col-md-offset-1 padding-none">
+            <h1>Create New Account</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-1 padding-top">
+            <h2>{{ message }}</h2>
+            <form action="{{ url_for('new_user')}}" method = "post">
+                <div class="form-group">
+
+                    <input type="hidden" name="state" value="{{STATE}}">
+
+                    <p id="message"></p>
+
+                    <br>
+                    <label>Enter Your Email Address:</label>
+                    <input type ="text" class="form-control" name="email" id="email" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+
+                    <br>
+                    <label>Enter a User Name:</label>
+                    <input type ="text" class="form-control" name="username" id="username" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+
+                    <script>
+                        function enableSubmitIfPasswordsMatch () {
+                            var p1 = document.getElementById("password").value;
+                            var p2 = document.getElementById("passwordVerify").value;
+                            var em = document.getElementById("email").value;
+                            var un = document.getElementById("username").value;
+                            if (em == "") {
+                                document.getElementById("message").innerHTML = "Specify an email address.";
+                                document.getElementById("submit").disabled=true;
+                                return;
+                            }
+                            if (em.indexOf("@") < 1 || em.indexOf(".") < 2) {
+                                document.getElementById("message").innerHTML = "Invalid email address.";
+                                document.getElementById("submit").disabled=true;
+                                return;
+                            }
+                            if (un == ""){
+                                document.getElementById("message").innerHTML = "Specify a user name.";
+                                document.getElementById("submit").disabled=true;
+                                return;
+                            }
+                            if (p1.length < 1) {
+                               document.getElementById("message").innerHTML = "Specify password.";
+                               document.getElementById("submit").disabled=true;
+                               return;
+                            }
+                            if (p1 != p2){
+                               document.getElementById("message").innerHTML = "Password Mismatch.";
+                               document.getElementById("submit").disabled=true;
+                               return;
+                            }
+                            document.getElementById("message").innerHTML = "Ready to create account.";
+                            document.getElementById("submit").disabled=false;
+                        }
+                    </script>
+
+                    <br>
+                    <label>Specify a Password:</label>
+                    <input type ="password" class="form-control" name="password" id="password" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+
+                    <br>
+                    <label>Re-specify the Password:</label>
+                    <input type ="password" class="form-control" name="passwordVerify" id="passwordVerify" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+
+                    <div class="padding-bottom"></div>
+
+                    <button type="submit" class="btn btn-default" id="submit" type="submit" >Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
