@@ -3,51 +3,24 @@
     <head>
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
     </head>
-    <body>
 
-        <div class="topHeader">
-            Catalog App
-        </div>
+    <body class="bodyColor">
 
-        {%if session.username != '' %}
-        <div class="category">
-            <a href="{{ url_for('addNewCategory') }}" >Create a New Category, {{ session.username }}</a>
-        </div>
-        {% endif %}
-
-
-<div class="row top-menu">
-
-    <div class="col-md-6 text-right">
-            <!----
-            <br><a href="{{url_for('showLogin')}}">Click Here to Log In - FORCED</a><br>
-            ---->
-
-
-            {%if 'email' not in session %}
-                <!---- <a href="{{url_for('showLogin')}}">Click Here to Log In </a> ---->
-                <a href="{{url_for('showLogin')}}">Click Here to LOG IN </a>
-            {% elif session.email == '' %}
-                <a href="{{url_for('showLogin')}}">Click Here to Log In </a>
-            {% elif session.provider == 'google' %}
-                Signed in as {{ session.email }}!<a href="{{url_for('gdisconnect')}}"  title="G --{{ session.username }}-- --{{ session.email }}--">Disconnect</a>
-            {% elif session.provider == 'facebook' %}
-                Signed in as {{ session.email }}!<a href="{{url_for('fbdisconnect')}}" title="FB">Disconnect</a>
-            {% elif session.provider == 'local' %}
-                Hi {{ session.username}}
-                <a href="{{url_for('disconnectLocal')}}">Disconnect</a>
-            {% else %}
-                <a href="{{url_for('gdisconnect')}}" title="Else G">GDisconnect</a>
-            {% endif %}
-    </div>
-</div>
+        {% include 'banner.html' %}
 
         <div class="mainBox">
 
             <div class="leftBox">
+
                 <div class="boxHeader">
-                    <a href="{{url_for('showCategories')}}">Categories</a>
-                </div>
+                    Categories
+                    {%if session.username != '' %}
+                    <div class="modify">
+                        <a href="{{ url_for('addNewCategory') }}" title="Add a new category, {{session.username}}">Add</a>
+                    </div>
+                    {% endif %}
+            </div>
+
 
                 {% for category in categories %}
 
@@ -64,24 +37,16 @@
                     Latest Items
                 </div>
 
-                <div class="itemName">
-                    itemName 1
+                {% for item in items %}
+
+                <div class="item">
+                    <a href="{{ url_for('showItemDescription', categoryName = item.category.name, itemName = item.name ) }}">{{item.name}} </a>
                     <div class="itemCategory">
-                        (item cat)
+                        ({{ item.category.name}})
                     </div>
                 </div>
-                <div class="itemName">
-                    itemName 2
-                    <div class="itemCategory">
-                        (item cat)
-                    </div>
-                </div>
-                <div class="itemName">
-                    itemName 3
-                    <div class="itemCategory">
-                        (item cat)
-                    </div>
-                </div>
+
+                {% endfor %}
 
             </div>
 

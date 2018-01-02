@@ -1,0 +1,35 @@
+<html>
+
+<head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+</head>
+<body>
+
+    <p>...{{ category.name }} item:</p>
+    <h1>{{ item.name }}</h1>
+
+    {% if session.email == item.ownerEmail %}
+
+        <form id='editDescription' action="{{url_for('updateDescription', categoryName = category.name, itemName = item.name)}}" method = 'post'>
+            <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
+            <input type="text"    id='itemDesc' name='itemDesc' value='{{item.description}}'>
+            <input type='submit' value='Update Description'>
+        </form>
+
+        <form id='deleteItem' action="{{url_for('deleteItem', categoryName = category.name, itemName = item.name)}}" method = 'post'>
+            <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
+            <input type='submit' value='Delete "{{ item.name }}"'>
+        </form>
+
+    {% else %}
+
+        <p>{{ item.description }}</p>
+
+    {% endif %}
+
+    <p>
+        <a href="{{ url_for('showItemsInCategory', category = category.name ) }}">Back to {{ category.name }} item list.</a>
+    </p>
+
+</body>
+</html>

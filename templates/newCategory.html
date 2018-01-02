@@ -1,20 +1,22 @@
 <html>
 
-<head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
-</head>
-<body>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
 
-<h1>New Category</h1>
+    <body class="bodyColor">
 
-<form id='addNewCatForm' action="{{url_for('addNewCategory')}}" method = 'post'>
+        {% include 'banner.html' %}
+        <h1 class="boxHeader">Add New Category</h1>
 
-    <p>Name:</p>
-        <input type ='text' size='30' name='name'>
-        <input type='submit' value='Create'>
-        <input type='submit' value='Cancel' onclick="addNewCatForm.action='{{url_for('showCategories')}};addNewCatForm.method='GET'">
-
-</form>
-
-</body>
+        <div class="mainbox">
+            <form id='addNewCatForm' action="{{url_for('addNewCategory')}}" method = 'post'>
+                <p>New Category Name:</p>
+                <input type ='text' size='30' name='name'>
+                <input type='submit' value='Create'>
+                <input type='submit' value='Cancel'
+                       onclick="addNewCatForm.action='{{url_for('showCategories')}};addNewCatForm.method='GET'">
+            </form>
+        </div>
+    </body>
 </html>

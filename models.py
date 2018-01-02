@@ -61,7 +61,8 @@ class Item(Base):
     addDate = Column(DateTime())
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
-    owner_id = Column(Integer, ForeignKey('user.id'))
+    ownerEmail = Column(String(250), ForeignKey('user.email'))
+    #owner_id = Column(Integer, ForeignKey('user.id'))
     owner = relationship(User)
 
     @property
@@ -74,6 +75,7 @@ class Item(Base):
         'description': self.description,
         'addDate': self.addDate,
         'category_id': self.category_id,
+        'ownerEmail': self.ownerEmail,
         'owner_id': self.owner_id
             }
 

@@ -1,0 +1,26 @@
+<html>
+
+<head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+</head>
+<body>
+
+<h1>New {{ category.name }} Item</h1>
+
+<form id='addNewItemForm' action="{{url_for('addNewItem', categoryName = category.name)}}" method = 'post'>
+
+    <p>Name:</p>
+        <input type ='text' size='30'  name='name'>
+        <input type ='text' size='500' name='description'>
+        <!----  picture ---->
+        <input type='submit' value='Create'>
+</form>
+
+<form   id="cancelItemAdd"
+        action="{{ url_for('showItemsInCategory', category = category.name ) }}"
+        method = 'get'>
+        <input type='submit' value="Cancel">
+</form>
+
+</body>
+</html>

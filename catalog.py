@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
-from sqlalchemy import create_engine, asc
+from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
 #from database_setup import Base, Restaurant, MenuItem, User
 from models import Base, Category, Item, User
@@ -13,6 +13,7 @@ import json
 from flask import make_response
 import requests
 from flask_httpauth import HTTPBasicAuth
+import datetime
 
 auth = HTTPBasicAuth()
 app = Flask(__name__)
@@ -63,8 +64,9 @@ def showInt(passedInt):
 def showCategories():
     #pull all categories in the table.
     categories = session.query(Category).all()
+    items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
     #display them using the template.
-    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session)
+    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
 
 #        username = login_session['username'],
 #        sessprovider = login_session['provider'])
@@ -95,24 +97,57 @@ def addNewCategory():
 def showItemsInCategory(category):
     category = session.query(Category).filter_by(name=category).one()
     items = session.query(Item).filter_by(category_id = category.id).all()
-    return render_template('itemsInCategory.html', category=category, items=items)
+    return render_template('itemsInCategory.html', category=category, items=items, itemCount=len(items))
 
 
-@app.route('/catalog/<category>/<item>')
-def showItemDescription(category, item):
+@app.route('/catalog/<categoryName>/<itemName>/Description')
+def showItemDescription(categoryName, itemName):
     #show the description of the item in the specified category
-    return "show the description of item, %s in the %s category" % (item, category)
+    #return "show the description of item, %s in the %s category" % (item, category)
+    category = session.query(Category).filter_by(name=categoryName).one()
+    item = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
+    return render_template('itemDescription.html', item=item, session=login_session, category=category)
 
-
-@app.route('/category/<category>/Items/new', methods=['GET', 'POST'])
-def addNewItem(category):
+@app.route('/category/<categoryName>/Items/new', methods=['GET', 'POST'])
+def addNewItem(categoryName):
+    category = session.query(Category).filter_by(name=categoryName).one()
+    items = session.query(Item).filter_by(category_id = category.id).all()
+    if 'email' not in login_session:
+            return redirect('/showLogin')
     if request.method == 'POST':
-        #newCategory = Category(name=request.form['name'])
-        #session.add(newCategory)
-        #session.commit()
-        return redirect(url_for('showCategories'))
+        #picture = Column(String)
+        #addDate = Column(DateTime())
+        newItem = Item(name=request.form['name'], description=request.form['description'],
+            category_id = category.id , addDate = datetime.datetime.now(), ownerEmail=login_session['email'])
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('showItemsInCategory', category=category.name))
     else:
-        return render_template('newCategory.html')
+        return render_template('newItemInCategory.html', category=category, items=items)
+
+
+@app.route('/catalog/<categoryName>/<itemName>/UpdateDescription', methods=['POST'])
+def updateDescription(categoryName, itemName):
+    category = session.query(Category).filter_by(name=categoryName).one()
+    updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
+    if 'email' not in login_session:
+            return redirect('/showLogin')
+    updateItem.description = request.form['itemDesc']
+    updateItem.addDate = datetime.datetime.now()
+    session.add(updateItem)
+    session.commit()
+    return redirect(url_for('showItemsInCategory', category=category.name))
+
+
+@app.route('/catalog/<categoryName>/<itemName>/DeleteItem', methods=['POST'])
+def deleteItem(categoryName, itemName):
+    category = session.query(Category).filter_by(name=categoryName).one()
+    deleteItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
+    if 'email' not in login_session:
+            return redirect('/showLogin')
+    session.delete(deleteItem)
+    session.commit()
+    return redirect(url_for('showItemsInCategory', category=category.name))
 
 
 # Create anti-forgery state token
@@ -445,7 +480,11 @@ def emailLogin():
         return response
     if request.method == 'POST':
         print("Looking for email %s" % request.form['email'])
-        user = session.query(User).filter_by(email=request.form['email']).one()
+        try:
+            user = session.query(User).filter_by(email=request.form['email']).one()
+        except Exception:
+            return render_template('loginLocalNew.html', STATE=login_session['state'], message = "User %s not defined" % request.form['email'])
+
         if not user:
             print "User not found"
             return False

@@ -4,23 +4,60 @@
     font-weight: bold;
     color: white;
     background-color: navy;
-    padding: 5px 400px 5px 100px;
+    width: 100%;
+    padding: 5px 0px 5px 100px;
     font-size: 20px;
+    display: -webkit-inline-box
 }
 
+.headerGreeting {
+    font-style: italic;
+    color: antiqueWhite;
+    padding-left: 8em;
+}
+
+.headerLink {
+    font-size: smaller;
+    font-style: italic;
+    color: antiqueWhite;
+    padding-left: 1em;
+}
+
+
+
+.modify{
+    font-family: Arial;
+    font-size: smaller;
+    font-style: italic;
+    text-align: center;
+    text-decoration: none;
+    color: chocolate;
+    padding: 0.5em 1em 0.5em 1em;
+}
+
+
+
 .mainBox {
-    padding: 15px 0px 1x5px 100px;
+    display: -webkit-inline-box;
+    padding: 2em 2em 2em 2em;
+    margin: 1em 5em 2em 5em;
+    background-color: whitesmoke;
+    border-radius: 1em;
 }
 
 .boxHeader {
     font-family: Arial;
+    font-size: larger;
     font-weight: bold;
     color: navy;
+    text-decoration: none;
+    padding: 1.5em 0em 1.5em 0em;
 }
 
 .leftBox{
     zposition: absolute;
     zpadding: 10px 0px 10px 100px;
+    padding-right: 6em;
 }
 
 .rightBox{
@@ -46,4 +83,8 @@
     padding: 5px 0px 5px 0px;
     position: relative;
     display: inline;
+}
+
+.bodyColor {
+    background-color: #CCCCCC;
 }
