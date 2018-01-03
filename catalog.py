@@ -75,7 +75,7 @@ def showCategoriesPlus(message):
 @app.route('/catalog/newCategory', methods=['GET', 'POST'])
 def addNewCategory():
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     if request.method == 'POST':
         # ensure that the database key value, category.name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
@@ -97,7 +97,7 @@ def addNewCategory():
 @app.route('/catalog/<categoryName>/DeleteCategory', methods=['POST'])
 def deleteCategory(categoryName):
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     if login_session['email'] != category.ownerEmail:
         return redirect(url_for('showCategories'))
@@ -134,7 +134,7 @@ def addNewItem(categoryName):
     category = session.query(Category).filter_by(name=categoryName).one()
     items = session.query(Item).filter_by(category_id = category.id).all()
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     if request.method == 'POST':
         # ensure that the database key value,name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
@@ -159,7 +159,7 @@ def addNewItem(categoryName):
 @app.route('/catalog/<categoryName>/<itemName>/UpdateDescription', methods=['POST'])
 def updateDescription(categoryName, itemName):
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     updateItem.description = request.form['itemDesc']
@@ -172,7 +172,7 @@ def updateDescription(categoryName, itemName):
 @app.route('/catalog/<categoryName>/<itemName>/EditDescription')
 def editDescription(categoryName, itemName):
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     return render_template('itemDescriptionModify.html', category=category, item=updateItem, session=login_session)
@@ -184,7 +184,7 @@ def deleteItem(categoryName, itemName):
     category = session.query(Category).filter_by(name=categoryName).one()
     deleteItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     if 'email' not in login_session:
-            return redirect('/login')
+        return redirect('/login')
     session.delete(deleteItem)
     session.commit()
     return redirect(url_for('showItemsInCategory', category=category.name))
@@ -194,7 +194,7 @@ def deleteItem(categoryName, itemName):
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+        for x in xrange(32))
     login_session['state'] = state
     # Include google and facebook logins in future release.
     # return render_template('login.html', STATE=state)
@@ -208,7 +208,7 @@ def createUser(login_session):
         return redirect(url_for('showItemsInCategory', category=category.name))
 
     newUser = User(username=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
+        'email'], picture=login_session['picture'])
     session.add(newUser)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
@@ -284,35 +284,35 @@ def get_user(id):
 
 @app.route('/emailLogin', methods=['POST'])
 def emailLogin():
-     login_session['email'] = ""
-     if request.form['state'] != login_session['state']:
-          response = make_response(json.dumps('Invalid state parameter.'), 401)
-          response.headers['Content-Type'] = 'application/json'
-          return response
-     if request.method == 'POST':
-          print("Looking for email %s" % request.form['email'])
-          try:
-               user = session.query(User).filter_by(email=request.form['email']).one()
-          except Exception:
-               return render_template('loginLocalNew.html', STATE=login_session['state'], message = "User %s not defined" % request.form['email'])
+    login_session['email'] = ""
+    if request.form['state'] != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    if request.method == 'POST':
+        print("Looking for email %s" % request.form['email'])
+        try:
+            user = session.query(User).filter_by(email=request.form['email']).one()
+        except Exception:
+            return render_template('loginLocalNew.html', STATE=login_session['state'], message = "User %s not defined" % request.form['email'])
 
-          if not user:
-               print "User not found"
-               return False
-               # redirect to the NEW USER PAGE
-               # return redirect(url_for('showCategories'))
-          elif not user.verify_password(request.form['password']):
-               print("Unable to verIfy password")
-               return render_template('loginLocal.html', STATE=state, message="Incorrect Password")
-          else:
-               print("Password verified for %s " % user.email)
-               login_session['email'] = user.email
-               login_session['provider'] = "local"
-               login_session['username'] = user.username
-               # WHAT IS THIS?  g.user = user
-               return redirect(url_for('showCategories'))
-     else:
-          return render_template('loginLocal.html', STATE=state, message = "")
+        if not user:
+            print "User not found"
+            return False
+            # redirect to the NEW USER PAGE
+            # return redirect(url_for('showCategories'))
+        elif not user.verify_password(request.form['password']):
+            print("Unable to verIfy password")
+            return render_template('loginLocal.html', STATE=state, message="Incorrect Password")
+        else:
+            print("Password verified for %s " % user.email)
+            login_session['email'] = user.email
+            login_session['provider'] = "local"
+            login_session['username'] = user.username
+            # WHAT IS THIS?  g.user = user
+            return redirect(url_for('showCategories'))
+    else:
+        return render_template('loginLocal.html', STATE=state, message = "")
 
 
 
