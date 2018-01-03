@@ -518,8 +518,8 @@ def emailLogin():
           if not user:
                print "User not found"
                return False
-               #redirect to the NEW USER PAGE
-               #return redirect(url_for('showCategories'))
+               # redirect to the NEW USER PAGE
+               # return redirect(url_for('showCategories'))
           elif not user.verify_password(request.form['password']):
                print("Unable to verIfy password")
                return render_template('loginLocal.html', STATE=state, message="Incorrect Password")
