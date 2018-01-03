@@ -75,7 +75,7 @@ def showCategoriesPlus(message):
 @app.route('/catalog/newCategory', methods=['GET', 'POST'])
 def addNewCategory():
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     if request.method == 'POST':
         #ensure that the database key value, category.name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
@@ -97,7 +97,7 @@ def addNewCategory():
 @app.route('/catalog/<categoryName>/DeleteCategory', methods=['POST'])
 def deleteCategory(categoryName):
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     if login_session['email'] != category.ownerEmail:
         return redirect(url_for('showCategories'))
@@ -134,7 +134,7 @@ def addNewItem(categoryName):
     category = session.query(Category).filter_by(name=categoryName).one()
     items = session.query(Item).filter_by(category_id = category.id).all()
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     if request.method == 'POST':
         #ensure that the database key value,name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
@@ -159,7 +159,7 @@ def addNewItem(categoryName):
 @app.route('/catalog/<categoryName>/<itemName>/UpdateDescription', methods=['POST'])
 def updateDescription(categoryName, itemName):
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     updateItem.description = request.form['itemDesc']
@@ -172,7 +172,7 @@ def updateDescription(categoryName, itemName):
 @app.route('/catalog/<categoryName>/<itemName>/EditDescription')
 def editDescription(categoryName, itemName):
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     category = session.query(Category).filter_by(name=categoryName).one()
     updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     return render_template('itemDescriptionModify.html', category=category, item=updateItem, session=login_session)
@@ -184,7 +184,7 @@ def deleteItem(categoryName, itemName):
     category = session.query(Category).filter_by(name=categoryName).one()
     deleteItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     if 'email' not in login_session:
-            return redirect('/showLogin')
+            return redirect('/login')
     session.delete(deleteItem)
     session.commit()
     return redirect(url_for('showItemsInCategory', category=category.name))
