@@ -552,12 +552,6 @@ def disconnectLocal():
     return redirect(url_for('showCategories'))
 
 
-@app.route('/resource')
-@auth.login_required
-def get_resource():
-    return jsonify({ 'data': 'Hello, %s!' % g.user.username })
-
-
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
