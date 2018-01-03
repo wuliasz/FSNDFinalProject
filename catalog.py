@@ -140,7 +140,8 @@ def addNewItem(categoryName):
         if len(request.form['name']) < 1:
             return redirect(url_for('showItemsInCategory', category=category.name))
         try:
-            checkItem = session.query(Item).filter_by(name=request.form['name']).one()
+            checkItem = session.query(Item).filter_by(
+                name=request.form['name'], category_id=category.id).one()
             showMessage = 'Item not added to %s: "%s" already exists!' % (categoryName, request.form['name'])
             return redirect(url_for('showCategoriesPlus', message=showMessage))
         except:
