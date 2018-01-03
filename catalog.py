@@ -503,7 +503,6 @@ def get_user(id):
 
 @app.route('/emailLogin', methods=['POST'])
 def emailLogin():
-<<<<<<< HEAD
      login_session['email'] = ""
      if request.form['state'] != login_session['state']:
           response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -533,37 +532,7 @@ def emailLogin():
                return redirect(url_for('showCategories'))
      else:
           return render_template('loginLocal.html', STATE=state, message = "")
-=======
-    login_session['email'] = ""
-    if request.form['state'] != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
-        response.headers['Content-Type'] = 'application/json'
-        return response
-    if request.method == 'POST':
-        print("Looking for email %s" % request.form['email'])
-        try:
-            user = session.query(User).filter_by(email=request.form['email']).one()
-        except Exception:
-            return render_template('loginLocalNew.html', STATE=login_session['state'], message = "User %s not defined" % request.form['email'])
 
-        if not user:
-            print "User not found"
-            return False
-            #redirect to the NEW USER PAGE
-            #return redirect(url_for('showCategories'))
-        elif not user.verify_password(request.form['password']):
-            print("Unable to verIfy password")
-            return render_template('loginLocal.html', STATE=state, message="Incorrect Password")
-        else:
-            print("Password verified for %s " % user.email)
-            login_session['email'] = user.email
-            login_session['provider'] = "local"
-            login_session['username'] = user.username
-            # WHAT IS THIS?  g.user = user
-            return redirect(url_for('showCategories'))
-    else:
-        return render_template('loginLocal.html', STATE=state, message = "")
->>>>>>> parent of 8c8011a... indent size and space after pound sign
 
 
 @app.route('/emailLoginNew', methods = ['POST'])
