@@ -21,7 +21,7 @@ CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_i
 APPLICATION_NAME = "Item Catalog"
 
 
-## Connect to Database and create database session
+# Connect to Database and create database session
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 
@@ -29,15 +29,15 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-#JSON API for category list
+# JSON API for category list
 @app.route('/catalog/category/JSON')
 def showCategoriesJSON():
-    #pull all categories in the table.
+    # pull all categories in the table.
     categories = session.query(Category).order_by(asc(Category.name)).all()
     return jsonify(Category=[i.serialize for i in categories])
 
 
-#JSON API for item list of specific category
+# JSON API for item list of specific category
 @app.route('/catalog/<categoryName>/Items/JSON')
 def showItemsInCategoryJSON(categoryName):
     try:
@@ -55,20 +55,20 @@ def showItemsInCategoryJSON(categoryName):
 @app.route('/')
 @app.route('/catalog')
 def showCategories():
-    #pull all categories in the table.
+    # pull all categories in the table.
     categories = session.query(Category).order_by(asc(Category.name)).all()
     items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
-    #display them using the template.
+    # display them using the template.
     return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
 
 
 @app.route('/')
 @app.route('/catalog/<message>')
 def showCategoriesPlus(message):
-    #pull all categories in the table.
+    # pull all categories in the table.
     categories = session.query(Category).order_by(asc(Category.name)).all()
     items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
-    #display them using the template.
+    # display them using the template.
     return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items, message=message)
 
 
@@ -77,7 +77,7 @@ def addNewCategory():
     if 'email' not in login_session:
             return redirect('/login')
     if request.method == 'POST':
-        #ensure that the database key value, category.name has been specified before adding it to the table.
+        # ensure that the database key value, category.name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
             showMessage = 'Category not added:  name not specified.'
             return redirect(url_for('showCategoriesPlus', message=showMessage))
@@ -123,7 +123,7 @@ def showItemsInCategory(category):
 
 @app.route('/catalog/<categoryName>/<itemName>/Description')
 def showItemDescription(categoryName, itemName):
-    #show the description of the item in the specified category
+    # show the description of the item in the specified category
     category = session.query(Category).filter_by(name=categoryName).one()
     item = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     return render_template('itemDescription.html', item=item, session=login_session, category=category)
@@ -136,7 +136,7 @@ def addNewItem(categoryName):
     if 'email' not in login_session:
             return redirect('/login')
     if request.method == 'POST':
-        #ensure that the database key value,name has been specified before adding it to the table.
+        # ensure that the database key value,name has been specified before adding it to the table.
         if len(request.form['name']) < 1:
             return redirect(url_for('showItemsInCategory', category=category.name))
         try:
@@ -145,8 +145,8 @@ def addNewItem(categoryName):
             showMessage = 'Item not added to %s: "%s" already exists!' % (categoryName, request.form['name'])
             return redirect(url_for('showCategoriesPlus', message=showMessage))
         except:
-            #picture = Column(String)
-            #addDate = Column(DateTime())
+            # picture = Column(String)
+            # addDate = Column(DateTime())
             newItem = Item(name=request.form['name'], description=request.form['description'],
                 category_id = category.id , addDate = datetime.datetime.now(), ownerEmail=login_session['email'])
             session.add(newItem)
@@ -196,14 +196,14 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    #Include google and facebook logins in future release.
-    #return render_template('login.html', STATE=state)
+    # Include google and facebook logins in future release.
+    # return render_template('login.html', STATE=state)
     return render_template('loginLocal.html', STATE=state, message='')
 
 
 # User Helper Functions
 def createUser(login_session):
-    #ensure that the database key value,name has been specified before adding it to the table.
+    # ensure that the database key value,name has been specified before adding it to the table.
     if len(login_session['username']) < 1:
         return redirect(url_for('showItemsInCategory', category=category.name))
 
@@ -261,7 +261,7 @@ def new_user():
     if session.query(User).filter_by(email = email).first() is not None:
         print "existing user"
         user = session.query(User).filter_by(username=username).first()
-        return jsonify({'message':'user already exists'}), 200#, {'Location': url_for('get_user', id = user.id, _external = True)}
+        return jsonify({'message':'user already exists'}), 200
 
     user = User(username = username, email = email)
     user.hash_password(password)
