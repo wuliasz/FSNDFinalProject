@@ -74,9 +74,9 @@ class Item(Base):
         'picture': self.picture,
         'description': self.description,
         'addDate': self.addDate,
-        'category_id': self.category_id,
-        'ownerEmail': self.ownerEmail,
-        'owner_id': self.owner_id
+        'category_id': self.category_id
+        # don't expose users emails
+        #'ownerEmail': self.ownerEmail
             }
 
 

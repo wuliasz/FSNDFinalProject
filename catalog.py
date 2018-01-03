@@ -53,8 +53,39 @@ def showInt(passedInt):
 
 
 
+# - i never got one working that will
+#   embed the item json within the category json
+##JSON API for entire catalog
+#@app.route('/catalog/JSON')
+#def catalogJSON():
+#    #pull all categories in the table.
+#    categories = session.query(Category).order_by(asc(Category.name)).all()
+#    items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
+#    #display them using the template.
+#    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
 
 
+#JSON API for category list
+@app.route('/catalog/category/JSON')
+def showCategoriesJSON():
+    #pull all categories in the table.
+    categories = session.query(Category).order_by(asc(Category.name)).all()
+    return jsonify(Category=[i.serialize for i in categories])
+
+
+#JSON API for item list of specific category
+@app.route('/catalog/<categoryName>/Items/JSON')
+def showItemsInCategoryJSON(categoryName):
+    try:
+        category = session.query(Category).filter_by(name=categoryName).one()
+    except:
+        showMessage = "Category '%s' does not exist!" % categoryName
+        response = make_response(json.dumps(showMessage), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    items = session.query(Item).filter_by(category_id = category.id).order_by(Item.name).all()
+    numberOfItems = len(items)
+    return jsonify(Item=[i.serialize for i in items])
 
 
 
