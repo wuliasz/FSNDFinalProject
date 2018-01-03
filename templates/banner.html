@@ -3,7 +3,6 @@
         Catalog App
         <div class="headerGreeting">
             {%if 'email' not in session %}
-                <!---- <a href="{{url_for('showLogin')}}">Click Here to Log In </a> ---->
                 <a  class="headerLink"
                     href="{{url_for('showLogin')}}"
                     >LOG IN</a>

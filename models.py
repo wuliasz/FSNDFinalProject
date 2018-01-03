@@ -6,10 +6,6 @@ from passlib.apps import custom_app_context as pwd_context
 
 Base = declarative_base()
 
-# Connect to Database and create database session
-##   USE THIS FOR REFERENCE:
-##   FSND/CRUD/full-stack-foundations/Lesson-4/Final-Project/
-
 
 class User(Base):
     __tablename__ = 'user'

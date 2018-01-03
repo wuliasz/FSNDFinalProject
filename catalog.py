@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc, desc
 from sqlalchemy.orm import sessionmaker
-#from database_setup import Base, Restaurant, MenuItem, User
 from models import Base, Category, Item, User
 from flask import session as login_session
 import random
@@ -30,41 +29,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
-
-
-
-
-
-# THIS SECTION FOR TESTING... WILL BE REMOVED....
-# Show all restaurants
-@app.route('/restaurant/')
-def showRestaurants():
-    return "you picked restaurants"
-
-
-@app.route('/restaurant/<passedString>')
-def showString(passedString):
-    return "testing - you sent this string: %s " % passedString
-
-
-@app.route('/restaurant/<int:passedInt>')
-def showInt(passedInt):
-    return "testing - you sent this integer:  %s " % passedInt
-
-
-
-# - i never got one working that will
-#   embed the item json within the category json
-##JSON API for entire catalog
-#@app.route('/catalog/JSON')
-#def catalogJSON():
-#    #pull all categories in the table.
-#    categories = session.query(Category).order_by(asc(Category.name)).all()
-#    items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
-#    #display them using the template.
-#    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
-
-
 #JSON API for category list
 @app.route('/catalog/category/JSON')
 def showCategoriesJSON():
@@ -88,8 +52,6 @@ def showItemsInCategoryJSON(categoryName):
     return jsonify(Item=[i.serialize for i in items])
 
 
-
-
 @app.route('/')
 @app.route('/catalog')
 def showCategories():
@@ -98,10 +60,6 @@ def showCategories():
     items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
     #display them using the template.
     return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
-
-#        username = login_session['username'],
-#        sessprovider = login_session['provider'])
-# was sending login_session.  i don't want to do that anymore.     session=login_session)
 
 
 @app.route('/')
@@ -112,7 +70,6 @@ def showCategoriesPlus(message):
     items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
     #display them using the template.
     return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items, message=message)
-
 
 
 @app.route('/catalog/newCategory', methods=['GET', 'POST'])
@@ -153,7 +110,6 @@ def deleteCategory(categoryName):
     return redirect(url_for('showCategories'))
 
 
-
 @app.route('/catalog/<category>/Items')
 def showItemsInCategory(category):
     try:
@@ -165,14 +121,13 @@ def showItemsInCategory(category):
         return redirect(url_for('showCategoriesPlus', message=showMessage))
 
 
-
 @app.route('/catalog/<categoryName>/<itemName>/Description')
 def showItemDescription(categoryName, itemName):
     #show the description of the item in the specified category
-    #return "show the description of item, %s in the %s category" % (item, category)
     category = session.query(Category).filter_by(name=categoryName).one()
     item = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     return render_template('itemDescription.html', item=item, session=login_session, category=category)
+
 
 @app.route('/category/<categoryName>/Items/new', methods=['GET', 'POST'])
 def addNewItem(categoryName):
@@ -240,11 +195,12 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
+    #Include google and facebook logins in future release.
     #return render_template('login.html', STATE=state)
     return render_template('loginLocal.html', STATE=state, message='')
 
 
+#to be included in the future.
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != login_session['state']:
@@ -317,6 +273,7 @@ def fbconnect():
     return output
 
 
+#to be included in the future.
 @app.route('/fbdisconnect')
 def fbdisconnect():
     facebook_id = login_session['facebook_id']
@@ -328,6 +285,7 @@ def fbdisconnect():
     return "you have been logged out"
 
 
+#to be included in the future.
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -427,9 +385,8 @@ def gconnect():
     print "done!"
     return output
 
+
 # User Helper Functions
-
-
 def createUser(login_session):
     #ensure that the database key value,name has been specified before adding it to the table.
     if len(login_session['username']) < 1:
@@ -455,9 +412,9 @@ def getUserID(email):
     except:
         return None
 
+
+#to be included in the future.
 # DISCONNECT - Revoke a current user's token and reset their login_session
-
-
 @app.route('/gdisconnect')
 def gdisconnect():
     # Only disconnect a connected user.
@@ -511,18 +468,6 @@ def new_user():
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-
-    #this is how udacity did it:
-    #username = request.get_json('username')
-    #password = request.get_json('password')
-    #email = request.get_json('email')
-    #
-    #this is how i got it to work using postman
-    #username = request.json['username']
-    #password = request.json['password']
-    #email = request.json['email']
-    #
-    #this is how I WILL do it - with a form
     username = request.form['username']
     password = request.form['password']
     email = request.form['email']
@@ -531,7 +476,6 @@ def new_user():
         print "missing arguments"
         abort(400)
 
-    #if session.query(User).filter_by(username = username).first() is not None:
     if session.query(User).filter_by(email = email).first() is not None:
         print "existing user"
         user = session.query(User).filter_by(username=username).first()
@@ -541,12 +485,11 @@ def new_user():
     user.hash_password(password)
     session.add(user)
     session.commit()
-    #return jsonify({ 'username': user.username }), 201#, {'Location': url_for('get_user', id = user.id, _external = True)}
+
     login_session['email'] = email
     login_session['provider'] = "local"
     login_session['username'] = username
     return redirect(url_for('showCategories'))
-
 
 
 @app.route('/users/<int:id>')
@@ -557,8 +500,6 @@ def get_user(id):
     return jsonify({'username': user.username})
 
 
-
-#@app.route('/emailLogin', methods=['GET','POST'])
 @app.route('/emailLogin', methods=['POST'])
 def emailLogin():
     login_session['email'] = ""
@@ -601,7 +542,6 @@ def emailLoginNew():
     return render_template('loginLocalNew.html', STATE=request.form['state'], message = "Create a New Login")
 
 
-
 @app.route('/emailDisconnect')
 def disconnectLocal():
     login_session['email'] = ""
@@ -609,53 +549,11 @@ def disconnectLocal():
     login_session['username'] = ""
     return redirect(url_for('showCategories'))
 
-#@app.route('/users/<email>')
-#def get_user(email):
-#    if not user:
-#        abort(400)
-#    return jsonify({'username': user.username})
-
-
-
-
-
-
 
 @app.route('/resource')
 @auth.login_required
 def get_resource():
     return jsonify({ 'data': 'Hello, %s!' % g.user.username })
-
-#@app.route('/bagels', methods = ['GET','POST'])
-#@auth.login_required
-#def showAllBagels():
-#    if request.method == 'GET':
-#        bagels = session.query(Bagel).all()
-#        return jsonify(bagels = [bagel.serialize for bagel in bagels])
-#    elif request.method == 'POST':
-#        name = request.json.get('name')
-#        description = request.json.get('description')
-#        picture = request.json.get('picture')
-#        price = request.json.get('price')
-#        newBagel = Bagel(name = name, description = description, picture = picture, price = price)
-#        session.add(newBagel)
-#        session.commit()
-#        return jsonify(newBagel.serialize)
-
-
-# END   BAGEL SHOP TESTING ^ ^ ^ ^ ^ ^ ^ ^ ^
-
-
-
-
-
-
-#MUST INCLUDE A LOGIN
-#MUST RECOGNIZE A LOGGED IN STATE.
-
-#must allow editing..
-#the description implies that item names are unique
-#i think it's a deliberate mistake.
 
 
 if __name__ == '__main__':
