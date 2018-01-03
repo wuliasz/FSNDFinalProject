@@ -63,7 +63,7 @@ def showInt(passedInt):
 @app.route('/catalog')
 def showCategories():
     #pull all categories in the table.
-    categories = session.query(Category).all()
+    categories = session.query(Category).order_by(asc(Category.name)).all()
     items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
     #display them using the template.
     return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items)
@@ -73,31 +73,66 @@ def showCategories():
 # was sending login_session.  i don't want to do that anymore.     session=login_session)
 
 
+@app.route('/')
+@app.route('/catalog/<message>')
+def showCategoriesPlus(message):
+    #pull all categories in the table.
+    categories = session.query(Category).order_by(asc(Category.name)).all()
+    items = session.query(Item).order_by(desc(Item.addDate)).limit(6)
+    #display them using the template.
+    return render_template('categoriesAndLatestItem.html', categories=categories, session=login_session, items=items, message=message)
+
+
+
 @app.route('/catalog/newCategory', methods=['GET', 'POST'])
 def addNewCategory():
     if 'email' not in login_session:
             return redirect('/showLogin')
     if request.method == 'POST':
-        #
-        # development response... for now...
-        #response = make_response(json.dumps('Add New Category - Post behavior not yet defined.'), 200)
-        #response.headers['Content-Type'] = 'application/json'
-        #return response
-        #
-        newCategory = Category(name=request.form['name'], ownerEmail=login_session['email'])
-        session.add(newCategory)
-        session.commit()
-        return redirect(url_for('showCategories'))
+        #ensure that the database key value, category.name has been specified before adding it to the table.
+        if len(request.form['name']) < 1:
+            showMessage = 'Category not added:  name not specified.'
+            return redirect(url_for('showCategoriesPlus', message=showMessage))
+        try:
+            category = session.query(Category).filter_by(name=request.form['name']).one()
+            showMessage = 'Category not added: "%s" already exists!' % request.form['name']
+            return redirect(url_for('showCategoriesPlus', message=showMessage))
+        except:
+            newCategory = Category(name=request.form['name'], ownerEmail=login_session['email'])
+            session.add(newCategory)
+            session.commit()
+            return redirect(url_for('showCategories'))
     else:
         return render_template('newCategory.html')
+
+
+@app.route('/catalog/<categoryName>/DeleteCategory', methods=['POST'])
+def deleteCategory(categoryName):
+    if 'email' not in login_session:
+            return redirect('/showLogin')
+    category = session.query(Category).filter_by(name=categoryName).one()
+    if login_session['email'] != category.ownerEmail:
+        return redirect(url_for('showCategories'))
+    deleteItems = session.query(Item).filter_by(category_id = category.id).all()
+    for item in deleteItems:
+        session.delete(item)
+        session.commit()
+    session.delete(category)
+    session.commit()
+    return redirect(url_for('showCategories'))
 
 
 
 @app.route('/catalog/<category>/Items')
 def showItemsInCategory(category):
-    category = session.query(Category).filter_by(name=category).one()
-    items = session.query(Item).filter_by(category_id = category.id).all()
-    return render_template('itemsInCategory.html', category=category, items=items, itemCount=len(items))
+    try:
+        category = session.query(Category).filter_by(name=category).one()
+        items = session.query(Item).filter_by(category_id = category.id).order_by(Item.name).all()
+        return render_template('itemsInCategory.html', category=category, items=items, itemCount=len(items))
+    except:
+        showMessage = 'Category "%s" does not exist!' % category
+        return redirect(url_for('showCategoriesPlus', message=showMessage))
+
 
 
 @app.route('/catalog/<categoryName>/<itemName>/Description')
@@ -115,28 +150,46 @@ def addNewItem(categoryName):
     if 'email' not in login_session:
             return redirect('/showLogin')
     if request.method == 'POST':
-        #picture = Column(String)
-        #addDate = Column(DateTime())
-        newItem = Item(name=request.form['name'], description=request.form['description'],
-            category_id = category.id , addDate = datetime.datetime.now(), ownerEmail=login_session['email'])
-        session.add(newItem)
-        session.commit()
-        return redirect(url_for('showItemsInCategory', category=category.name))
+        #ensure that the database key value,name has been specified before adding it to the table.
+        if len(request.form['name']) < 1:
+            return redirect(url_for('showItemsInCategory', category=category.name))
+        try:
+            checkItem = session.query(Item).filter_by(name=request.form['name']).one()
+            showMessage = 'Item not added to %s: "%s" already exists!' % (categoryName, request.form['name'])
+            return redirect(url_for('showCategoriesPlus', message=showMessage))
+        except:
+            #picture = Column(String)
+            #addDate = Column(DateTime())
+            newItem = Item(name=request.form['name'], description=request.form['description'],
+                category_id = category.id , addDate = datetime.datetime.now(), ownerEmail=login_session['email'])
+            session.add(newItem)
+            session.commit()
+            return redirect(url_for('showItemsInCategory', category=category.name))
     else:
         return render_template('newItemInCategory.html', category=category, items=items)
 
 
 @app.route('/catalog/<categoryName>/<itemName>/UpdateDescription', methods=['POST'])
 def updateDescription(categoryName, itemName):
-    category = session.query(Category).filter_by(name=categoryName).one()
-    updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     if 'email' not in login_session:
             return redirect('/showLogin')
+    category = session.query(Category).filter_by(name=categoryName).one()
+    updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
     updateItem.description = request.form['itemDesc']
     updateItem.addDate = datetime.datetime.now()
     session.add(updateItem)
     session.commit()
     return redirect(url_for('showItemsInCategory', category=category.name))
+
+
+@app.route('/catalog/<categoryName>/<itemName>/EditDescription')
+def editDescription(categoryName, itemName):
+    if 'email' not in login_session:
+            return redirect('/showLogin')
+    category = session.query(Category).filter_by(name=categoryName).one()
+    updateItem = session.query(Item).filter_by(category_id = category.id, name=itemName).one()
+    return render_template('itemDescriptionModify.html', category=category, item=updateItem, session=login_session)
+    return render_template('itemDescription.html', item=item, session=login_session, category=category)
 
 
 @app.route('/catalog/<categoryName>/<itemName>/DeleteItem', methods=['POST'])
@@ -347,6 +400,10 @@ def gconnect():
 
 
 def createUser(login_session):
+    #ensure that the database key value,name has been specified before adding it to the table.
+    if len(login_session['username']) < 1:
+        return redirect(url_for('showItemsInCategory', category=category.name))
+
     newUser = User(username=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
     session.add(newUser)

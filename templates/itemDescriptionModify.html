@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
+
+    <body class="bodyColor">
+
+        {% include 'banner.html' %}
+
+        <h1 class="boxHeader tabRight">{{ item.name }}
+                <a class="quietLink" href="{{ url_for('showItemsInCategory', category = category.name ) }}">({{ category.name }})</a>
+        </h1>
+
+        <form id='editDescription' action="{{url_for('updateDescription', categoryName = category.name, itemName = item.name)}}" method = 'post'>
+
+            <div class="mainBox">
+
+                {% if session.email != item.ownerEmail %}
+                    <div class="inputLabel">Description:</div>
+                    <div class="inputBox">{{ item.description }}</div>
+                {% else %}
+                    <div class="inputLabel">Description:</div>
+                    <div class="inputBox" >
+                        <input  type="text"
+                                id='itemDesc'
+                                name='itemDesc'
+                                size='500'
+                                width='100%'
+                                value='{{item.description}}'
+                                class="inputBox" >
+                    </div>
+                {% endif %}
+
+            </div>
+
+            {% if session.email == item.ownerEmail %}
+            <div class="tabRight">
+                <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
+                <input class="linkButton" type='submit' value='Update Description Changes'>
+            </div>
+            {% endif %}
+        </form>
+    </body>
+</html>

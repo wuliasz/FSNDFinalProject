@@ -1,41 +1,48 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<html>
     <head>
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
     </head>
-    <body>
 
-        <div class="topHeader">
-            {{ category.name }} Items ({{ itemCount }} items)
-        </div>
+    <body class="bodyColor">
 
-        {%if session.username != '' %}
-        <div class="category">
-            <a href="{{ url_for('addNewItem', categoryName = category.name) }}" >Add New Item, {{ session.username }}</a>
-        </div>
-        {% endif %}
+        {% include 'banner.html' %}
 
+        <h1 class="boxHeader tabRight">{{ category.name }} Items ({{ itemCount }} items)</h1>
+        <div class="mainBox inlineBox">
 
-        <div class="mainBox">
+            <div class="leftBox">
+                {%if session.username != '' %}
+                <div class="modify">
+                    <a  class="modify"
+                        href="{{ url_for('addNewItem', categoryName = category.name) }}"
+                        title="Add new item, {{ session.username }}"
+                    >Add Item</a>
+                </div>
+                {% endif %}
+
+                {% if session.email == category.ownerEmail %}
+                <div class="modify">
+                    <form   id='deleteCategoryForm'
+                            action="{{url_for('deleteCategory', categoryName = category.name)}}"
+                            method='post'>
+                        <input class="linkButton" type='submit' value='Delete "{{ category.name }}"'>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
 
             <div class="rightBox">
-                <div class="boxHeader">
-                    <a href="{{url_for('showCategories')}}">Categories</a>
-                </div>
-
                 {% for item in items %}
-
                 <div class="item">
-                    <a href="{{ url_for('showItemDescription', categoryName = category.name, itemName = item.name ) }}">{{item.name}}</a>
+                    <a  class="item" href="{{ url_for('showItemDescription', categoryName = category.name, itemName = item.name ) }}">{{item.name}}</a>
                 </div>
-
                 {% endfor %}
-
             </div>
         </div>
-
-
-
+        <div class="tabRight">
+            <a class="quietLink smaller" href="{{url_for('showCategories')}}">Back to Categories</a>
+        </div>
     </body>
 </html>
 

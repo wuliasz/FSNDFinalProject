@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html>
-<head>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
 
-</head>
+    <body class="bodyColor" onload="document.getElementById('submit').disabled=true;">
 
-<body>
+        {% include 'banner.html' %}
 
-    <div class="row banner menu">
-        <div class="col-md-11 col-md-offset-1 padding-none">
-            <h1>Create New Account</h1>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 col-md-offset-1 padding-top">
+        <h1 class="boxHeader tabRight">Create New Account</h1>
+
+        <div class="mainBox">
             <h2>{{ message }}</h2>
             <form action="{{ url_for('new_user')}}" method = "post">
-                <div class="form-group">
 
                     <input type="hidden" name="state" value="{{STATE}}">
 
                     <p id="message"></p>
 
-                    <br>
-                    <label>Enter Your Email Address:</label>
-                    <input type ="text" class="form-control" name="email" id="email" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+                    <div class="inlineBox">
+                        <div class="labelNewAcc">Enter Your Email Address:</div>
+                        <input type ="text"
+                               class="form-control"
+                               name="email" id="email" value=""
+                               onkeyup="enableSubmitIfPasswordsMatch();">
+                    </div>
 
-                    <br>
-                    <label>Enter a User Name:</label>
-                    <input type ="text" class="form-control" name="username" id="username" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+                    <div class="inlineBox">
+                        <div class="labelNewAcc">Enter a User Name:</div>
+                        <input type ="text"
+                               class="form-control"
+                               name="username" id="username" value=""
+                               onkeyup="enableSubmitIfPasswordsMatch();">
+                    </div>
 
                     <script>
                         function enableSubmitIfPasswordsMatch () {
@@ -65,13 +70,20 @@
                         }
                     </script>
 
-                    <br>
-                    <label>Specify a Password:</label>
-                    <input type ="password" class="form-control" name="password" id="password" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+                    <div class="inlineBox">
+                        <div class="labelNewAcc">Specify a Password:</div>
+                        <input  type ="password"
+                                class="form-control"
+                                name="password" id="password" value=""
+                                onkeyup="enableSubmitIfPasswordsMatch();">
+                    </div>
 
-                    <br>
-                    <label>Re-specify the Password:</label>
-                    <input type ="password" class="form-control" name="passwordVerify" id="passwordVerify" value="" onkeyup="enableSubmitIfPasswordsMatch();">
+                    <div class="inlineBox">
+                        <div class="labelNewAcc">Re-specify the Password:</div>
+                        <input  type ="password"
+                                class="form-control" name="passwordVerify" id="passwordVerify" value=""
+                                onkeyup="enableSubmitIfPasswordsMatch();">
+                    </div>
 
                     <div class="padding-bottom"></div>
 
@@ -79,7 +91,8 @@
                 </div>
             </form>
         </div>
-    </div>
-</body>
-
+        <div class="tabRight">
+            <a class="quietLink smaller" href="{{url_for('showCategories')}}">Cancel</a>
+        </div>
+    </body>
 </html>

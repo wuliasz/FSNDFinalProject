@@ -8,28 +8,23 @@
 
         {% include 'banner.html' %}
 
-        <div class="mainBox">
+        <div class="message">{{ message }}</div>
 
+        <div class="mainBox inlineBox">
             <div class="leftBox">
-
                 <div class="boxHeader">
                     Categories
                     {%if session.username != '' %}
                     <div class="modify">
-                        <a href="{{ url_for('addNewCategory') }}" title="Add a new category, {{session.username}}">Add</a>
+                        <a class="modify smaller" href="{{ url_for('addNewCategory') }}" title="Add a new category, {{session.username}}">Add</a>
                     </div>
                     {% endif %}
-            </div>
-
-
-                {% for category in categories %}
-
-                <div class="category">
-                    <a href="{{ url_for('showItemsInCategory', category = category.name ) }}">{{ category.name }}</a>
                 </div>
-
+                {% for category in categories %}
+                <div class="category">
+                    <a class="category" href="{{ url_for('showItemsInCategory', category = category.name ) }}">{{ category.name }}</a>
+                </div>
                 {% endfor %}
-
             </div>
 
             <div class="rightBox">
@@ -38,22 +33,15 @@
                 </div>
 
                 {% for item in items %}
-
                 <div class="item">
-                    <a href="{{ url_for('showItemDescription', categoryName = item.category.name, itemName = item.name ) }}">{{item.name}} </a>
+                    <a class="item" href="{{ url_for('showItemDescription', categoryName = item.category.name, itemName = item.name ) }}">{{item.name}}</a>
                     <div class="itemCategory">
                         ({{ item.category.name}})
                     </div>
                 </div>
-
                 {% endfor %}
-
             </div>
-
         </div>
-
-
-
     </body>
 </html>
 

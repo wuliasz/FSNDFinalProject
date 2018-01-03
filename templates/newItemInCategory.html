@@ -1,26 +1,36 @@
 <html>
 
-<head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
-</head>
-<body>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
 
-<h1>New {{ category.name }} Item</h1>
+    <body class="bodyColor">
 
-<form id='addNewItemForm' action="{{url_for('addNewItem', categoryName = category.name)}}" method = 'post'>
+        {% include 'banner.html' %}
 
-    <p>Name:</p>
-        <input type ='text' size='30'  name='name'>
-        <input type ='text' size='500' name='description'>
-        <!----  picture ---->
-        <input type='submit' value='Create'>
-</form>
+        <h1 class="boxHeader tabRight">New {{ category.name }} Item</h1>
 
-<form   id="cancelItemAdd"
-        action="{{ url_for('showItemsInCategory', category = category.name ) }}"
-        method = 'get'>
-        <input type='submit' value="Cancel">
-</form>
+        <div class="mainBox">
+            <form id='addNewItemForm' action="{{url_for('addNewItem', categoryName = category.name)}}" method = 'post'>
+                <p class="inputLabel">Name:</p>
+                <p><input class="inputBox" type ='text' size='30'  name='name'></p>
+                <p class="inputLabel">Description:</p>
+                <p class="inputBox" >
+                    <input  class="inputBox"
+                            type='text'
+                            size='500'
+                            width='100%'
+                            name='description'>
+                </p>
+                <!----  picture ---->
+                <p><input type='submit' value='Create'></p>
+            </form>
+            <form   id="cancelItemAdd"
+                    action="{{ url_for('showItemsInCategory', category = category.name ) }}"
+                    method = 'get'>
+                    <input type='submit' value="Cancel">
+            </form>
 
+        </div>
 </body>
 </html>

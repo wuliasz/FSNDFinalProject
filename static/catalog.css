@@ -27,7 +27,6 @@
 
 .modify{
     font-family: Arial;
-    font-size: smaller;
     font-style: italic;
     text-align: center;
     text-decoration: none;
@@ -38,12 +37,16 @@
 
 
 .mainBox {
-    display: -webkit-inline-box;
     padding: 2em 2em 2em 2em;
     margin: 1em 5em 2em 5em;
     background-color: whitesmoke;
     border-radius: 1em;
 }
+
+.inlineBox {
+    display: -webkit-inline-box;
+}
+
 
 .boxHeader {
     font-family: Arial;
@@ -51,36 +54,51 @@
     font-weight: bold;
     color: navy;
     text-decoration: none;
-    padding: 1.5em 0em 1.5em 0em;
+    padding: 1.5em 0em 0em 0em;
 }
 
+.tabRight {
+    margin-left: 5em;
+}
+
+
 .leftBox{
-    zposition: absolute;
-    zpadding: 10px 0px 10px 100px;
     padding-right: 6em;
 }
 
 .rightBox{
-    zposition: absolute;
-    zpadding: 10px 0px 10px 300px;
 }
+
+
+.smaller {
+    font-size: smaller;
+}
+
 
 .category {
     font-family: Arial;
-    color: red;
+    color: crimson;
+    text-decoration: none;
+    padding: 5px 0px 5px 0px;
+}
+
+.item {
+    font-family: Arial;
+    color: darkred;
+    text-decoration: none;
     padding: 5px 0px 5px 0px;
 }
 
 .itemName {
     font-family: Arial;
-    color: red;
+    color: darkred;
     padding: 5px 0px 5px 0px;
 }
 
 .itemCategory{
     font-family: Arial;
     color: grey;
-    padding: 5px 0px 5px 0px;
+    padding: 0em 1em 0em 0.5em;
     position: relative;
     display: inline;
 }
@@ -88,3 +106,55 @@
 .bodyColor {
     background-color: #CCCCCC;
 }
+
+.quietLink {
+    font-size: smaller;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.inputLabel {
+    font-family: Arial;
+    font-size: smaller;
+    color: crimson;
+    text-decoration: none;
+    padding: 0px;
+}
+
+.inputBox {
+    width: 100%;
+    padding: 0px;
+}
+
+.linkButton {
+    font-family: Arial;
+    font-size: smaller;
+    font-style: italic;
+    text-align: center;
+    text-decoration: none;
+    color: chocolate;
+    padding: 0;
+
+    border: none;
+    background-color: #CCCCCC;
+    display: inline-flex;
+}
+
+.label5 {
+    width: 5em;
+}
+
+.labelNewAcc {
+    width: 12em;
+}
+
+.message {
+    font-family: Arial;
+    font-style: italic;
+    font-size: larger;
+    text-align: center;
+    color: darkorchid;
+    padding-top: 0.5em;
+}
+
+

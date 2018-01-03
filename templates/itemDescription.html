@@ -1,35 +1,41 @@
 <html>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
+    </head>
 
-<head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
-</head>
-<body>
+    <body class="bodyColor">
 
-    <p>...{{ category.name }} item:</p>
-    <h1>{{ item.name }}</h1>
+        {% include 'banner.html' %}
 
-    {% if session.email == item.ownerEmail %}
+        <h1 class="boxHeader tabRight">{{ item.name }}
+                <a class="quietLink" href="{{ url_for('showItemsInCategory', category = category.name ) }}">({{ category.name }})</a>
+        </h1>
+        <div class="mainBox">
+            <div class="inputLabel">Description:</div>
+            <div class="inputBox">{{ item.description }}</div>
+        </div>
 
-        <form id='editDescription' action="{{url_for('updateDescription', categoryName = category.name, itemName = item.name)}}" method = 'post'>
-            <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
-            <input type="text"    id='itemDesc' name='itemDesc' value='{{item.description}}'>
-            <input type='submit' value='Update Description'>
-        </form>
+        {% if session.email == item.ownerEmail %}
+            <div class="tabRight">
+                <a  class="linkButton"
+                    href="{{url_for('editDescription', categoryName = category.name, itemName = item.name)}}"
+                    >Edit "{{ item.name }}"</a>
 
-        <form id='deleteItem' action="{{url_for('deleteItem', categoryName = category.name, itemName = item.name)}}" method = 'post'>
-            <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
-            <input type='submit' value='Delete "{{ item.name }}"'>
-        </form>
+                <form   id='deleteItem'
+                        zclass="linkButton"
+                        action="{{url_for('deleteItem', categoryName = category.name, itemName = item.name)}}"
+                        method='post'>
+                    <input type ='hidden' id='itemName' name='itemName' value='{{item.name}}'>
+                    <input class="linkButton" type='submit' value='Delete "{{ item.name }}"'>
+                </form>
+            </div>
+        {% endif %}
 
-    {% else %}
-
-        <p>{{ item.description }}</p>
-
-    {% endif %}
-
-    <p>
-        <a href="{{ url_for('showItemsInCategory', category = category.name ) }}">Back to {{ category.name }} item list.</a>
-    </p>
-
-</body>
+        <div class="tabRight">
+            <a class="quietLink smaller" href="{{ url_for('showItemsInCategory', category = category.name ) }}">Back to {{ category.name }}</a>
+        </div>
+        <div class="tabRight">
+            <a class="quietLink smaller" href="{{url_for('showCategories')}}">Back to Categories</a>
+        </div>
+    </body>
 </html>
