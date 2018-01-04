@@ -5,33 +5,39 @@
             {%if 'email' not in session %}
                 <a  class="headerLink"
                     href="{{url_for('showLogin')}}"
-                    >LOG IN</a>
+                    >Log In </a>
+
             {% elif session.email == '' %}
                 <a  class="headerLink"
                     href="{{url_for('showLogin')}}"
                     >Log In </a>
+
             {% elif session.provider == 'google' %}
                 Signed in as {{ session.email }}!
                 <a  class="headerLink"
                     href="{{url_for('gdisconnect')}}"
                     title="G --{{ session.username }}-- --{{ session.email }}--"
                     >Disconnect</a>
+
             {% elif session.provider == 'facebook' %}
                 Signed in as {{ session.email }}!
                 <a  class="headerLink"
                     href="{{url_for('fbdisconnect')}}"
                     title="FB"
                     >Disconnect</a>
+
             {% elif session.provider == 'local' %}
                 Hi {{ session.username}}
                 <a  class="headerLink"
                     href="{{url_for('disconnectLocal')}}"
                     >Disconnect</a>
+
             {% else %}
                 <a  class="headerLink"
                     href="{{url_for('gdisconnect')}}"
                     title="Else G"
                     >GDisconnect</a>
+
             {% endif %}
         </div>
     </div>

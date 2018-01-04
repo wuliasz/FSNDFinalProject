@@ -229,17 +229,20 @@ def deleteItem(categoryName, itemName):
     return redirect(url_for('showItemsInCategory', category=category.name))
 
 
+# taken from Udacity exercise material
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    # Include google and facebook logins in future release.
-    # return render_template('login.html', STATE=state)
-    return render_template('loginLocal.html', STATE=state, message='')
+    # Include google    --- facebook logins in future release... maybe
+    return render_template('login.html', STATE=state)
+    # now they say, NOT to do it this way;
+    # return render_template('loginLocal.html', STATE=state, message='')
 
 
+# taken from Udacity exercise material
 # User Helper Functions
 def createUser(login_session):
     # ensure that the database key value,name has been
@@ -270,6 +273,7 @@ def getUserID(email):
         return None
 
 
+# taken from Udacity exercise material
 @auth.verify_password
 def verify_password(username, password):
     print "Looking for user %s" % username
@@ -324,60 +328,140 @@ def get_user(id):
     return jsonify({'username': user.username})
 
 
-@app.route('/emailLogin', methods=['POST'])
-def emailLogin():
-    login_session['email'] = ""
-    if request.form['state'] != login_session['state']:
+# taken from Udacity exercise material
+@app.route('/gconnect', methods=['POST'])
+def gconnect():
+    # Validate state token
+    if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    if request.method == 'POST':
-        print("Looking for email %s" % request.form['email'])
-        try:
-            user = session.query(User).filter_by(
-                    email=request.form['email']).one()
-        except Exception:
-            return render_template('loginLocalNew.html',
-                                   STATE=login_session['state'],
-                                   message="User %s not defined" %
-                                   request.form['email'])
+    # Obtain authorization code
+    code = request.data
 
-        if not user:
-            print "User not found"
-            return False
-            # redirect to the NEW USER PAGE
-            # return redirect(url_for('showCategories'))
-        elif not user.verify_password(request.form['password']):
-            print("Unable to verIfy password")
-            return render_template('loginLocal.html', STATE=state,
-                                   message="Incorrect Password")
-        else:
-            print("Password verified for %s " % user.email)
-            login_session['email'] = user.email
-            login_session['provider'] = "local"
-            login_session['username'] = user.username
-            # WHAT IS THIS?  g.user = user
-            return redirect(url_for('showCategories'))
+    try:
+        # Upgrade the authorization code into a credentials object
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow.redirect_uri = 'postmessage'
+        credentials = oauth_flow.step2_exchange(code)
+    except FlowExchangeError:
+        print(" FLOW EXCHANGE ERROR ")
+        response = make_response(
+            json.dumps('Failed to upgrade the authorization code.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Check that the access token is valid.
+    access_token = credentials.access_token
+    url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
+           % access_token)
+    h = httplib2.Http()
+    result = json.loads(h.request(url, 'GET')[1])
+    # If there was an error in the access token info, abort.
+    if result.get('error') is not None:
+        response = make_response(json.dumps(result.get('error')), 500)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is used for the intended user.
+    gplus_id = credentials.id_token['sub']
+    if result['user_id'] != gplus_id:
+        response = make_response(
+            json.dumps("Token's user ID doesn't match given user ID."), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Verify that the access token is valid for this app.
+    if result['issued_to'] != CLIENT_ID:
+        response = make_response(
+            json.dumps("Token's client ID does not match app's."), 401)
+        print "Token's client ID does not match app's."
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    stored_access_token = login_session.get('access_token')
+    stored_gplus_id = login_session.get('gplus_id')
+    # 12/15/17 I am forcing the values to be reset with each login.
+    #          i had a problem while testing, where i could NOT
+    #          view the required information
+    if stored_access_token is not None and gplus_id == stored_gplus_id:
+        jsonMsg = 'Current user is already connected.'
+        response = make_response(json.dumps(jsonMsg), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    # Store the access token in the session for later use.
+    login_session['access_token'] = credentials.access_token
+    login_session['gplus_id'] = gplus_id
+
+    # Get user info
+    userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
+    params = {'access_token': credentials.access_token, 'alt': 'json'}
+    answer = requests.get(userinfo_url, params=params)
+
+    data = answer.json()
+
+    print(" ")
+    print(" printing answer.json(): ")
+    print(answer.json())
+    print(" ")
+
+    login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
+    login_session['email'] = data['email']
+    # ADD PROVIDER TO LOGIN SESSION
+    login_session['provider'] = 'google'
+
+    # see if user exists, if it doesn't make a new one
+    user_id = getUserID(data["email"])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
+    output = ''
+    output += '<h1>Welcome, '
+    output += login_session['username']
+    output += '!</h1>'
+    output += '<img src="'
+    output += login_session['picture']
+    output += ' " style = "width: 300px; '
+    output += ' height: 300px;border-radius: 150px;'
+    output += ' -webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    flash("you are now logged in as %s" % login_session['username'])
+    print "done!"
+    return output
+
+
+# taken from Udacity exercise material
+# DISCONNECT - Revoke a current user's token and reset their login_session
+@app.route('/gdisconnect')
+def gdisconnect():
+    # Only disconnect a connected user.
+    access_token = login_session.get('access_token')
+    if access_token is None:
+        response = make_response(
+            json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    url = 'https://accounts.google.com/o/oauth2/revoke?token='
+    url += '%s' % access_token
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        jsonMsg = 'Successfully disconnected.'
+        response = make_response(json.dumps(jsonMsg), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
     else:
-        return render_template('loginLocal.html', STATE=state, message="")
-
-
-@app.route('/emailLoginNew', methods=['POST'])
-def emailLoginNew():
-    if request.form['state'] != login_session['state']:
-        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        jsonMsg = 'Failed to revoke token for given user.'
+        response = make_response(json.dumps(jsonMsg, 400))
         response.headers['Content-Type'] = 'application/json'
         return response
-    return render_template('loginLocalNew.html', STATE=request.form['state'],
-                           message="Create a New Login")
-
-
-@app.route('/emailDisconnect')
-def disconnectLocal():
-    login_session['email'] = ""
-    login_session['provider'] = ""
-    login_session['username'] = ""
-    return redirect(url_for('showCategories'))
 
 
 if __name__ == '__main__':
