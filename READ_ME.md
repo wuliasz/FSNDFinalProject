@@ -37,12 +37,7 @@ Unregistered users may only view defined lists.
 ####Security:
 
 A signon is optional for viewing but required for creating categories and items.
-The signon is a local system based upon one's email address.
-The user is expected to provide a name (to be used as a greeting) and a password
-when creating an account.
-
-Google and Facebook signons might be added in a future release, but will
-continue to use the email address as a unique identifier.
+Uses GOOGLE for authentication. 
 
 
 

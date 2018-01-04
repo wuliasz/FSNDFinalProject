@@ -401,11 +401,6 @@ def gconnect():
 
     data = answer.json()
 
-    print(" ")
-    print(" printing answer.json(): ")
-    print(answer.json())
-    print(" ")
-
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -445,13 +440,6 @@ def gdisconnect():
         return response
     url = 'https://accounts.google.com/o/oauth2/revoke?token='
     url += '%s' % access_token
-    print(" ")
-    print(" access_token is: ")
-    print(access_token)
-    print(" ")
-    print(" url is: ")
-    print(url)
-    print(" ")
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] == '200':
@@ -460,17 +448,9 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        # jsonMsg = 'Successfully disconnected.'
-        # response = make_response(json.dumps(jsonMsg), 200)
-        # response.headers['Content-Type'] = 'application/json'
-        # return response
         showMessage = 'Successfully Disconnected.'
         return redirect(url_for('showCategoriesPlus', message=showMessage))
     else:
-        # jsonMsg = 'Failed to revoke token for given user.'
-        # response = make_response(json.dumps(jsonMsg, 400))
-        # response.headers['Content-Type'] = 'application/json'
-        # return response
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']

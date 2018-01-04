@@ -16,7 +16,7 @@
                 Signed in as {{ session.email }}!
                 <a  class="headerLink"
                     href="{{url_for('gdisconnect')}}"
-                    title="G --{{ session.username }}-- --{{ session.email }}--"
+                    title="Google disconnect for {{session.email}}"
                     >Disconnect</a>
 
             {% elif session.provider == 'facebook' %}
