@@ -328,7 +328,7 @@ def get_user(id):
     return jsonify({'username': user.username})
 
 
-# taken from Udacity exercise material
+# modified version of function taken from Udacity exercise material
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -384,11 +384,11 @@ def gconnect():
     # 12/15/17 I am forcing the values to be reset with each login.
     #          i had a problem while testing, where i could NOT
     #          view the required information
-    if stored_access_token is not None and gplus_id == stored_gplus_id:
-        jsonMsg = 'Current user is already connected.'
-        response = make_response(json.dumps(jsonMsg), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+    # if stored_access_token is not None and gplus_id == stored_gplus_id:
+    #    jsonMsg = 'Current user is already connected.'
+    #    response = make_response(json.dumps(jsonMsg), 200)
+    #    response.headers['Content-Type'] = 'application/json'
+    #    return response
 
     # Store the access token in the session for later use.
     login_session['access_token'] = credentials.access_token
@@ -445,6 +445,13 @@ def gdisconnect():
         return response
     url = 'https://accounts.google.com/o/oauth2/revoke?token='
     url += '%s' % access_token
+    print(" ")
+    print(" access_token is: ")
+    print(access_token)
+    print(" ")
+    print(" url is: ")
+    print(url)
+    print(" ")
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     if result['status'] == '200':
@@ -453,15 +460,24 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        jsonMsg = 'Successfully disconnected.'
-        response = make_response(json.dumps(jsonMsg), 200)
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # jsonMsg = 'Successfully disconnected.'
+        # response = make_response(json.dumps(jsonMsg), 200)
+        # response.headers['Content-Type'] = 'application/json'
+        # return response
+        showMessage = 'Successfully Disconnected.'
+        return redirect(url_for('showCategoriesPlus', message=showMessage))
     else:
-        jsonMsg = 'Failed to revoke token for given user.'
-        response = make_response(json.dumps(jsonMsg, 400))
-        response.headers['Content-Type'] = 'application/json'
-        return response
+        # jsonMsg = 'Failed to revoke token for given user.'
+        # response = make_response(json.dumps(jsonMsg, 400))
+        # response.headers['Content-Type'] = 'application/json'
+        # return response
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        showMessage = 'Failed to revoke token for given user.'
+        return redirect(url_for('showCategoriesPlus', message=showMessage))
 
 
 if __name__ == '__main__':
