@@ -1,22 +1,22 @@
 
-##About the Catalog App
+## About the Catalog App
 
 
 
-####Overview:
+#### Overview:
 
 The catalog app allows registered users to create and view categorized lists of items with descriptions.
 
 
 
-####The Catalog:
+#### The Catalog:
 
 The catalog consists of a list of categories in which items are defined.
 Items consist of a name and a description and are tied back to a category.
 
 
 
-####Permissions:
+#### Permissions:
 
 View only access is available to the public.
 
@@ -34,7 +34,7 @@ Unregistered users may only view defined lists.
 
 
 
-####Security:
+#### Security:
 
 A signon is optional for viewing but required for creating categories and items.
 Uses GOOGLE for authentication. 
