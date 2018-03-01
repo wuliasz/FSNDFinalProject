@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<meta name="google-site-verification" content="zHAH2pkiGRfvq58iEkji6mp6Oj0LOp-P-nOCAZPyjz0" />
+
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
         </script>
@@ -17,7 +17,7 @@
 <div id="signinButton">
     <span class="g-signin"
         data-scope="openid email"
-        data-clientid="592081987549-ovvmeeodgclik6iqjii3cvd089tj6fqc.apps.googleusercontent.com"
+        data-clientid="832864591461-0ufq7q0jlv63qbcvucg46jbjtibfja20.apps.googleusercontent.com"
         data-redirecturi="postmessage"
         data-accesstype="offline"
         data-cookiepolicy="single_host_origin"

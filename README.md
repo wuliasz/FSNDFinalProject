@@ -1,40 +1,76 @@
 
-## About the Catalog App
+## Item Catalog App - for Linux Virtual Machine
 
 
 
 #### Overview:
 
-The catalog app allows registered users to create and view categorized lists of items with descriptions.
+This project is the same as the Item Catalog project found here:  
+https://github.com/wuliasz/ItemCatalog.git
+
+This version has been modified to run in a digital ocean linux environment.
+
+
+#### URL:
+This item catalog can be found here:
+http://165.227.211.197/catalog
+
+
+**WARNING: Chrome and IE browsers have warned me that this site is UNSAFE.** 
+But I would assure you that it is only my item catalog that runs here.   
+This IP is to my second digital ocean droplet, created after having problems 
+with the first one.  I assume that I've received a recycled IP previously 
+owned by some bad players, but, I really don't know that.
+I have submitted a request to https://feedback.smartscreen.microsoft.com 
+to explicitly label this site as safe. I am nearing my nano-degree completion 
+deadline so I would rather not wait for the status to clear before submitting 
+the project 
+
+
+#### SSH Access
+Access using user, grader at 165.227.211.197 port 2200 using SSH (I used PuTTY).
+SSH Key provided in *Notes to Reviewer* field.
+
+
+#### Summary of Software Installed
+* finger
+* Apache2
+* Git
+* Web Services Gateway Interface (WSGI)
+* Python 3
+* PIP
+* Flask
+* Flask HTTPAuth
+* SQLAlchemy
+* Passlib
+* OAuth2Client
+
+#### Summary of Server Configurations Made
+* Reset root password.
+* Created two new users.
+* Defined sudoers
+* Forced using SSH.
+* Prevented remote root login.
+* Changed the default listening port.
+* Updated software.
+* Set up firewall (deny incoming, allow outgoing, etc.).
+* Created directory for applications.
+* Clone Item Catalog. 
+* Modified localhost python to work on the server, 
+  specifically to be called via the WSGI.
+* Update Apache Configuation:
+	* Specify WSGIPythonPath.
+	* Specify server name.
+	* Define the Item Catalog WSGI.
+	* Specify site configuration:
+		*Specify ItemCatalog WSGI file and path.
+		*Activated the Item Catalog site.
 
 
 
-#### The Catalog:
-
-The catalog consists of a list of categories in which items are defined.
-Items consist of a name and a description and are tied back to a category.
+#### List of Third Party Resources Used
 
 
 
-#### Permissions:
-
-View only access is available to the public.
-
-Categories may only be added by registered users and are unique.
-Categories may only be deleted by it's creator.
-When a category is deleted, all it's items are also deleted, regardless of creator.
-
-Items may be added to any existing category by any registered user, that is, not only
-by the category creator, but must be unique within a category and may only be edited
-or deleted by the item creator.
-Item may be duplicated under different categories;  they must be unique within a given
-category.
-
-Unregistered users may only view defined lists.
 
 
-
-#### Security:
-
-A signon is optional for viewing but required for creating categories and items.
-Uses GOOGLE for authentication. 

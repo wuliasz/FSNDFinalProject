@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-	<meta name="google-site-verification" content="zHAH2pkiGRfvq58iEkji6mp6Oj0LOp-P-nOCAZPyjz0" />
+
         <link rel=stylesheet type=text/css href="{{ url_for('static', filename='catalog.css') }}">
     </head>
 

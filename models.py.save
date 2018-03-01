@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from sqlalchemy import create_engine
 from passlib.apps import custom_app_context as pwd_context
 
@@ -80,7 +80,8 @@ class Item(Base):
 # Changed create engine statements per Udacity mentor, Akshay
 db_path = os.path.join(os.path.dirname(__file__), 'catalog.db')
 db_uri = 'sqlite:///{}'.format(db_path)
-engine = create_engine(db_uri)
+create_engine(db_uri)
+ngine(db_uri))
 
 Base.metadata.create_all(engine)
 
