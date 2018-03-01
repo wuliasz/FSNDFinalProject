@@ -1,11 +1,9 @@
-
 ## Item Catalog App - for Linux Virtual Machine
-
 
 
 #### Overview:
 
-This project is the same as the Item Catalog project found here:  
+This project is the same as the Item Catalog project found here:
 https://github.com/wuliasz/ItemCatalog.git
 
 This version has been modified to run in a digital ocean linux environment.
@@ -45,6 +43,7 @@ SSH Key provided in *Notes to Reviewer* field.
 * Passlib
 * OAuth2Client
 
+
 #### Summary of Server Configurations Made
 * Reset root password.
 * Created two new users.
@@ -69,8 +68,7 @@ SSH Key provided in *Notes to Reviewer* field.
 
 
 #### List of Third Party Resources Used
-	* 
-
-
+* Digital Ocean Server
+* Google OAuth
 
 
