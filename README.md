@@ -16,6 +16,7 @@ http://165.227.211.197/catalog
 
 **WARNING: Chrome and IE browsers have warned me that this site is UNSAFE.** 
 But I would assure you that it is only my item catalog that runs here.   
+** THE SITE WAS ABANDONED IN 2018 AND I EXPECT THE IP ABOVE TO HAVE BEEN REUSED SINCE THEN **
 This IP is to my second digital ocean droplet, created after having problems 
 with the first one.  I assume that I've received a recycled IP previously 
 owned by some bad players, but, I really don't know that.
